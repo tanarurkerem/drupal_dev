@@ -4,11 +4,15 @@ Drupal Development Environment With Docker
 Install
 =======
 
-git clone https://github.com/tanarurkerem/drupal\_dev.git
-cd drupal\_dev
-make
+* git clone https://github.com/tanarurkerem/drupal\_dev.git
+* cd drupal\_dev
+* make
 
-Follow the installations instructions, add an alias call dd
+Follow the installations instructions, add an alias call "dd"
+
+Example:
+
+alias dd='make -f /Users/pp/Work/drupal-dev/Makefile -- '
 
 How to use
 ==========
