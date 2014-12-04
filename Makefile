@@ -28,8 +28,8 @@ stop:
 	docker stop $(mysql_docker_name)
 
 start:
-	docker start $(drupal_docker_name)
 	docker start $(mysql_docker_name)
+	docker start $(drupal_docker_name)
 
 clean:
 	docker rm $(drupal_docker_name)
