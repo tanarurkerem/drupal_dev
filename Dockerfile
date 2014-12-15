@@ -16,6 +16,8 @@ RUN apt-get update && \
       mysql-client \
       php-apc && \
       rm -rf /var/lib/apt/lists/*
+RUN a2enmod rewrite
+COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN usermod -u 1000 www-data
 
 ENV APACHE_RUN_USER www-data
