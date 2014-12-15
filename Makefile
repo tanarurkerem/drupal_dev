@@ -4,6 +4,7 @@ project = $(shell basename $(shell pwd))
 drupal_docker_name = "$(project)-drupal"
 mysql_docker_name = "$(project)-mysql"
 alias = "make -f $(makefiledir)/Makefile -- "
+docroot = $(shell pwd)/html
 
 info:
 	# Useage:
@@ -31,19 +32,16 @@ info:
 
 run:
 	docker run --name $(mysql_docker_name) -e MYSQL_ROOT_PASSWORD=root -d mysql
-	docker run --name="$(drupal_docker_name)" --link $(mysql_docker_name):mysql -p 80:80 -v $(shell pwd)/html:/var/www/html -d $(image_name)
-
-build:
-	docker build -t $(image_name) .
+	docker run --name="$(drupal_docker_name)" --link $(mysql_docker_name):mysql -p 80:80 -v $(docroot):/var/www/html -d $(image_name)
 
 bash:
-	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(shell pwd)/html:/var/www/html --workdir /var/www/html --entrypoint bash $(image_name)
+	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(docroot):/var/www/html --workdir /var/www/html --entrypoint bash $(image_name)
 
 mysql:
-	docker run -t -i --rm --link $(mysql_docker_name):mysql --entrypoint mysql $(image_name) -u root -proot -h mysql
+	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(docroot):/var/www/html --workdir /var/www/html --entrypoint mysql $(image_name) -u root -proot -h mysql
 
 drush:
-	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(shell pwd)/html:/var/www/html --workdir /var/www/html --entrypoint drush $(image_name) $(filter-out $@,$(MAKECMDGOALS))
+	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(docroot):/var/www/html --workdir /var/www/html --entrypoint drush $(image_name) $(filter-out $@,$(MAKECMDGOALS))
 
 stop:
 	docker stop $(drupal_docker_name)
@@ -60,3 +58,10 @@ clean:
 #For command line parameters
 %:
 	@:
+
+build:
+	docker build -t $(image_name) .
+
+push:
+	docker push $(image_name)
+
