@@ -11,6 +11,7 @@ RUN apt-get update && \
       php5-sqlite \
       php5-gd \
       php5-curl \
+      php5-memcached \
       php-pear \
       drush \
       mysql-client \
