@@ -1,10 +1,5 @@
-image_name = tanarurkerem/drupal-dev
 makefiledir = $(shell pwd)
-project = $(shell basename $(shell pwd))
-drupal_docker_name = "$(project)-drupal"
-mysql_docker_name = "$(project)-mysql"
 alias = "make -f $(makefiledir)/Makefile -- "
-docroot = $(shell pwd)/html
 
 info:
 	# Useage:
@@ -27,41 +22,33 @@ info:
 	# Build image:
 	#
 	# make build   - build web image from Dockerfile
-	# make push    - push builded web image to docker.hub
 	#
 
 run:
-	docker run --name $(mysql_docker_name) -e MYSQL_ROOT_PASSWORD=root -d mysql
-	docker run --name="$(drupal_docker_name)" --link $(mysql_docker_name):mysql -p 80:80 -v $(docroot):/var/www/html -d $(image_name)
+	docker-compose up -d
 
 bash:
-	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(docroot):/var/www/html --workdir /var/www/html --entrypoint bash $(image_name)
+	docker-compose exec web /bin/bash
 
 mysql:
-	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(docroot):/var/www/html --workdir /var/www/html --entrypoint mysql $(image_name) -u root -proot -h mysql
+	docker-compose exec web mysql -u root -proot -h mysql
 
 drush:
-	docker run -t -i --rm --link $(mysql_docker_name):mysql -v $(docroot):/var/www/html --workdir /var/www/html --entrypoint drush $(image_name) $(filter-out $@,$(MAKECMDGOALS))
+	docker-compose exec web drush $(filter-out $@,$(MAKECMDGOALS))
 
 stop:
-	docker stop $(drupal_docker_name)
-	docker stop $(mysql_docker_name)
+	docker-compose stop
 
 start:
-	docker start $(mysql_docker_name)
-	docker start $(drupal_docker_name)
+	docker-compose start
 
 clean:
-	docker rm $(drupal_docker_name)
-	docker rm $(mysql_docker_name)
+	docker-compose rm -f
 
 #For command line parameters
 %:
 	@:
 
 build:
-	docker build -t $(image_name) .
-
-push:
-	docker push $(image_name)
+	docker-compose build
 

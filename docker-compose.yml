@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  web:
+    build: web
+    volumes:
+    - www:/var/www/html
+    - .:/home/dev
+    ports:
+    - "8888:80"
+    environment:
+    - MYSQL_HOST=mysql
+    working_dir: /var/www/html
+    hostname: web
+  mysql:
+    image: mysql
+    environment:
+    - MYSQL_ROOT_PASSWORD=root
+    hostname: mysql
